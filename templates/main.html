@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>ALOHA Random Defense</title>
+</head>
+<body>
+    <h1>{{ update_time }}</h1>
+    {% for level in problem_list %}
+        <div>
+            <div>{{ level }}</div>
+            <ul>
+            {% if problem_list[level] %}
+                {% for problem in problem_list[level] %}
+                    <li>
+                        <img src="{{ 'https://static.solved.ac/tier_small/' + problem.img_src }}" alt="{{ problem.alt_level }}" width="20">
+                        <a href="{{ problem.url }} ">{{ problem.problem_id + problem.title }}</a>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <li>문제 부족</li>
+            {% endif %}
+            </ul>
+        </div>
+    {% endfor %}
+</body>
+</html>
