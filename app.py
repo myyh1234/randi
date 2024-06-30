@@ -5,8 +5,13 @@ from info import user_list
 from add_practice import make_practice
 
 app = Flask(__name__)
-DATE = ''
 
+def date_to_str(date):
+    WEEKDAY = {0:'월', 1:'화', 2:'수', 3:'목', 4:'금', 5:'토', 6:'일'}
+    return f'{date.year}년 {date.month}월 {date.day}일 ({WEEKDAY[date.weekday()]})'
+
+DATE = date_to_str(datetime.datetime.now() - datetime.timedelta(days=1))
+next_date = ''
 problem_list = {"Bronze":[], "Silver":[], "Gold":[], "Platinum":[]}
 next_problems = {}
 
@@ -25,8 +30,8 @@ class Problem:
     def __repr__(self):
         return str(self)
 
-def set_problem():
-    global DATE, next_problems
+def set_problem(start_time = '06:00'):
+    global DATE, next_problems, next_date
 
     ret = {}
     url = "https://solved.ac/api/v3/search/problem"
@@ -59,21 +64,21 @@ def set_problem():
     next_problems = ret
 
     t = datetime.datetime.now()
-    WEEKDAY = {0:'월', 1:'화', 2:'수', 3:'목', 4:'금', 5:'토', 6:'일'}
-    DATE = f'{t.year}년 {t.month}월 {t.day}일 ({WEEKDAY[t.weekday()]})'
-    # DATE += ' ' + t.strftime('%m/%d %H:%M')
+    
+    next_date = date_to_str(t)
 
-    make_practice(t.strftime('%m/%d') + " Random Defense", t, next_problems)
+    make_practice(t.strftime('%m/%d') + " Random Defense", t, start_time, next_problems)
 
     # print("problem set: ")
     # print(problem_list)
     # print(DATE)
-    # print('changed')
+    print('changed')
     
 def update_problem():
-    global problem_list, next_problems
+    global problem_list, next_problems, DATE, next_date
     problem_list = next_problems
-    # print('updated')
+    DATE = next_date
+    print('updated')
 
 @app.route('/')
 def root():
@@ -81,12 +86,13 @@ def root():
     return render_template('main.html', update_time = DATE, problem_list = problem_list)
 
 if __name__ == '__main__':
-    with app.app_context():
-        if not problem_list:
-            set_problem()
     worker = BackgroundScheduler(timezone='Asia/Seoul')
+    
+    worker.add_job(lambda: set_problem('07:45'), 'date', run_date='2024-07-01 07:44:00')
+    worker.add_job(update_problem, 'date', run_date='2024-07-01 07:45:00')
+    
     worker.add_job(set_problem, 'cron', hour=5, minute=30)
     worker.add_job(update_problem, 'cron', hour=6)
     worker.start()
-    app.run(host='172.26.8.200')
+    app.run(host='172.26.3.93')
     # app.run()

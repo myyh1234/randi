@@ -9,10 +9,11 @@ from random import random
 import datetime, time
 from info import PASSWORD
 
-def make_practice(title: str, today: datetime.datetime, problems):
+def make_practice(title: str, today: datetime.datetime, start_time: str, problems):
     options = Options()
-    if __name__ == '__main__':
-        options.add_experimental_option("detach", True)
+    # options.add_argument("--headless")
+    # if __name__ == '__main__':
+    #     options.add_experimental_option("detach", True)
 
     GROUP_ID = 20229
     driver = webdriver.Chrome(options=options)
@@ -40,6 +41,7 @@ def make_practice(title: str, today: datetime.datetime, problems):
             input('solve captcha')
             driver.implicitly_wait(time_to_wait=5)
 
+    print('login')
     driver.get(f'https://www.acmicpc.net/group/practice/create/{GROUP_ID}')
     
     driver.find_element(By.NAME, 'contest_title').send_keys(title)
@@ -47,18 +49,19 @@ def make_practice(title: str, today: datetime.datetime, problems):
 
     start_box = driver.find_element(By.NAME, 'contest_start')
     start_box.clear()
-    start_box.send_keys(today.strftime("%Y-%m-%d") + " 06:00")
+    start_box.send_keys(today.strftime("%Y-%m-%d") + " " + start_time)
     # time.sleep(3)
     tomorrow = today + datetime.timedelta(days=1)
     end_box = driver.find_element(By.NAME, 'contest_end')
     end_box.clear()
-    end_box.send_keys(tomorrow.strftime("%Y-%m-%d") + " 06:00")
+    end_box.send_keys(tomorrow.strftime("%Y-%m-%d") + " " + start_time)
     # time.sleep(3)
     
     freeze = driver.find_element(By.NAME, 'contest_freeze')
     freeze.clear()
     freeze.send_keys('0')
     # time.sleep(3)
+    print('filled setting')
 
     add_box = driver.find_element(By.ID, 'problem-search')
     for level in problems:
@@ -68,6 +71,7 @@ def make_practice(title: str, today: datetime.datetime, problems):
             driver.implicitly_wait(time_to_wait=2)
             # time.sleep(3)
     
+    print('added problems')
     driver.find_element(By.ID, 'save_button').click()
 
 
