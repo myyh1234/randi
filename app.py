@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 import requests, datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from info import user_list
@@ -85,6 +85,10 @@ def root():
     global DATE, problem_list
     return render_template('main.html', update_time = DATE, problem_list = problem_list)
 
+@app.route('/css/<path:text>')
+def css(text):
+    return send_from_directory('css', text)
+
 if __name__ == '__main__':
     worker = BackgroundScheduler(timezone='Asia/Seoul')
     
@@ -94,5 +98,5 @@ if __name__ == '__main__':
     worker.add_job(set_problem, 'cron', hour=5, minute=30)
     worker.add_job(update_problem, 'cron', hour=6)
     worker.start()
-    app.run(host='172.26.3.93')
+    app.run(host='0.0.0.0')
     # app.run()

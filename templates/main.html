@@ -4,22 +4,23 @@
     <meta charset="UTF-8">
     <title>ALOHA Random Defense</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>{{ update_time }}</h1>
+    <h1 class="update_time">{{ update_time }}</h1>
     {% for level in problem_list %}
-        <div>
-            <div>{{ level }}</div>
-            <ul>
+        <div class="problem_list_box">
+            <div class="problem_list_title">{{ level }}</div>
+            <ul class="problem_list">
             {% if problem_list[level] %}
                 {% for problem in problem_list[level] %}
-                    <li>
+                    <li class="problem_list_item">
                         <img src="{{ 'https://static.solved.ac/tier_small/' + problem.img_src }}" alt="{{ problem.alt_level }}" width="20">
                         <a href="{{ problem.url }} ">{{ problem.problem_id + problem.title }}</a>
                     </li>
                 {% endfor %}
             {% else %}
-                <li>문제 부족</li>
+                <li class="problem_list_not_found_item">문제 부족</li>
             {% endif %}
             </ul>
         </div>
