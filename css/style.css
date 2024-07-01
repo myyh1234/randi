@@ -1,0 +1,80 @@
+body {
+    color: #FAFAFA;
+    background: #131315;
+}
+
+a {
+    text-decoration: none;
+}
+
+.update_time {
+    width: 100%;
+    padding: 8px 0;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.problem_list_box {
+    width: 95%;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 0 auto 16px;
+    background: #27272E;
+    box-sizing: border-box;
+}
+
+.problem_list_title {
+    width: 100%;
+    font-size: 24px;
+    text-align: center;
+}
+
+.problem_list_box:nth-of-type(1) > .problem_list_title {
+    color: brown;
+}
+.problem_list_box:nth-of-type(2) > .problem_list_title {
+    color: silver;
+}
+.problem_list_box:nth-of-type(3) > .problem_list_title {
+    color: gold;
+}
+.problem_list_box:nth-of-type(4) > .problem_list_title {
+    color: paleturquoise;
+}
+
+.problem_list {
+    width: 100%;
+    padding: 0 12px;
+    list-style: none;
+    box-sizing: border-box;
+
+}
+.problem_list_item {
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+}
+
+.problem_list_item img {
+    display: flex;
+    flex-direction: column;
+    margin: auto 12px auto auto;
+}
+.problem_list_item a {
+    display: flex;
+    color: #FAFAFA;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-direction: column;
+    text-overflow: ellipsis;
+    margin: auto auto auto 0;
+}
+.problem_list_item a:hover {
+    text-decoration: underline;
+}
+
+.problem_list_not_found_item {
+    width: 100%;
+    text-align: center;
+}
