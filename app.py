@@ -1,8 +1,8 @@
 from flask import Flask, render_template, send_from_directory
-import requests, datetime
+import requests, datetime, sys
 from apscheduler.schedulers.background import BackgroundScheduler
 from info import user_list
-from add_practice import make_practice
+from add_practice import *
 
 app = Flask(__name__)
 
@@ -50,7 +50,7 @@ def set_problem(start_time = '06:00'):
 
         problems = response.json()['items']
         if len(problems) < 3:
-            ret.append([])
+            ret[level] = []
         else:
             now_problem = []
             for i in range(3):
@@ -90,13 +90,46 @@ def css(text):
     return send_from_directory('css', text)
 
 if __name__ == '__main__':
+    if not login():
+        print("login failed")
+    else:
+        print("login")
+                
     worker = BackgroundScheduler(timezone='Asia/Seoul')
     
-    worker.add_job(lambda: set_problem('07:45'), 'date', run_date='2024-07-01 07:44:00')
-    worker.add_job(update_problem, 'date', run_date='2024-07-01 07:45:00')
+    if len(sys.argv) > 1:
+        url = "https://solved.ac/api/v3/search/problem"
+        headers = {
+            "x-solvedac-language": "ko",
+            "Accept": "application/json"
+        }
+        
+        got = sys.argv[1].split(',')
+        if len(got) != 3*len(problem_list):
+            print("Wrong number of problem")
+        for i, lv in enumerate(problem_list):
+            tmp = []
+            for x in range(3):
+                now_num = got[i*3+x]
+                if now_num:
+                    response = requests.get(url, headers=headers, params={"query":now_num})
+                    problem = response.json()['items'][0]
+                    tmp.append((Problem(
+                        problem_id=problem["problemId"], 
+                        title=problem["titleKo"], 
+                        level=problem["level"]
+                    )))
+
+            next_problems[lv] = tmp
+        
+        next_date = date_to_str(datetime.datetime.now() - datetime.timedelta(hours=6))
+        update_problem()
+    else:
+        worker.add_job(lambda: set_problem('07:45'), 'date', run_date='2024-07-01 07:44:00')
+        worker.add_job(update_problem, 'date', run_date='2024-07-01 07:45:00')
     
     worker.add_job(set_problem, 'cron', hour=5, minute=30)
     worker.add_job(update_problem, 'cron', hour=6)
     worker.start()
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=80)
     # app.run()

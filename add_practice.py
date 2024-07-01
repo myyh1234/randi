@@ -9,39 +9,58 @@ from random import random
 import datetime, time
 from info import PASSWORD
 
-def make_practice(title: str, today: datetime.datetime, start_time: str, problems):
-    options = Options()
-    # options.add_argument("--headless")
-    # if __name__ == '__main__':
-    #     options.add_experimental_option("detach", True)
+GROUP_ID = 20229
 
-    GROUP_ID = 20229
+def build_driver():
+    options = Options()
+    # options.add_argument("--single-process")
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=options)
+    return driver
+
+def login(driver = False):
+    global GROUP_ID
+    if not driver:
+        driver = build_driver()
     driver.get(url=f'https://www.acmicpc.net/group/practice/{GROUP_ID}')
     driver.implicitly_wait(time_to_wait=5)
 
     if driver.title == '로그인':
         id_box = driver.find_element(By.NAME, 'login_user_id')
         id_box.send_keys('myyh1234')
-        driver.implicitly_wait(random() * 5)
+        time.sleep(random() * 2)
 
         pw_box = driver.find_element(By.NAME, 'login_password')
         pw_box.send_keys(PASSWORD)
-        driver.implicitly_wait(random() * 5)
+        time.sleep(random() * 2)
 
         auto_checkbox = driver.find_element(By.NAME, 'auto_login')
         auto_checkbox.click()
-        driver.implicitly_wait(random() * 5)
+        time.sleep(random() * 2)
 
         submit = driver.find_element(By.ID, 'submit_button')
         submit.click()
 
         time.sleep(5)
         if driver.title == '로그인':
-            input('solve captcha')
-            driver.implicitly_wait(time_to_wait=5)
+            return False
 
     print('login')
+    return True
+
+def make_practice(title: str, today: datetime.datetime, start_time: str, problems):
+    global GROUP_ID
+    # options.add_argument("--headless")
+    # if __name__ == '__main__':
+    #     options.add_experimental_option("detach", True)
+
+    driver = build_driver()
+    
+    login(driver, GROUP_ID)
+
     driver.get(f'https://www.acmicpc.net/group/practice/create/{GROUP_ID}')
     
     driver.find_element(By.NAME, 'contest_title').send_keys(title)
