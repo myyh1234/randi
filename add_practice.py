@@ -17,7 +17,6 @@ def build_driver():
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=options)
     return driver
 
@@ -30,11 +29,15 @@ def login(driver = False):
 
     if driver.title == '로그인':
         id_box = driver.find_element(By.NAME, 'login_user_id')
-        id_box.send_keys('myyh1234')
+        for c in 'myyh1234':
+            id_box.send_keys(c)
+            time.sleep(random()/2)
         time.sleep(random() * 2)
 
         pw_box = driver.find_element(By.NAME, 'login_password')
-        pw_box.send_keys(PASSWORD)
+        for c in PASSWORD:
+            pw_box.send_keys(c)
+            time.sleep(random()/2)
         time.sleep(random() * 2)
 
         auto_checkbox = driver.find_element(By.NAME, 'auto_login')
@@ -59,9 +62,11 @@ def make_practice(title: str, today: datetime.datetime, start_time: str, problem
 
     driver = build_driver()
     
-    login(driver, GROUP_ID)
+    if not login(driver):
+        return False
 
     driver.get(f'https://www.acmicpc.net/group/practice/create/{GROUP_ID}')
+    driver.implicitly_wait(time_to_wait=5)
     
     driver.find_element(By.NAME, 'contest_title').send_keys(title)
     # time.sleep(3)
@@ -93,6 +98,7 @@ def make_practice(title: str, today: datetime.datetime, start_time: str, problem
     print('added problems')
     driver.find_element(By.ID, 'save_button').click()
 
+    return True
 
 # if __name__ == '__main__':
 #     class Problem:

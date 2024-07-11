@@ -10,3 +10,6 @@ chromedriver-linux64
 .rn
 .env
 display.sh
+no-solve.txt
+problem_history.txt
+data/
